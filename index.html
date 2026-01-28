@@ -37,29 +37,28 @@
             }, [messages]);
 
             const handleSend = async () => {
-                if (!input.trim()) return;
+    if (!input.trim()) return;
 
-                const userMessage = { role: 'user', text: input };
-                setMessages(prev => [...prev, userMessage]);
-                setInput('');
-                setIsTyping(true);
+    const userMessage = { role: 'user', text: input };
+    setMessages(prev => [...prev, userMessage]);
+    setInput('');
+    setIsTyping(true);
 
-                // COMMUNICATION LOGIC
-                // In a real app, you'd call your API here. 
-                // For now, let's make it respond to your specific projects.
-                setTimeout(() => {
-                    let response = "That's interesting! Arun has experience in Python and C++. Would you like to see his projects?";
-                    
-                    if (input.toLowerCase().includes("hello") || input.toLowerCase().includes("hi")) {
-                        response = "Hi there! I can tell you about Arun's skills in React, Machine Learning, or his recent Mask Detection project.";
-                    } else if (input.toLowerCase().includes("project")) {
-                        response = "Arun has built a Face Mask Detector using Deep Learning and several Web Apps using React and Tailwind CSS.";
-                    }
+    try {
+        const response = await fetch('YOUR_VERCEL_LINK_HERE', { // Paste link from Step 2
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: input })
+        });
 
-                    setMessages(prev => [...prev, { role: 'bot', text: response }]);
-                    setIsTyping(false);
-                }, 1000);
-            };
+        const data = await response.json();
+        setMessages(prev => [...prev, { role: 'bot', text: data.reply }]);
+    } catch (error) {
+        setMessages(prev => [...prev, { role: 'bot', text: "Error connecting to AI. Check your Vercel logs!" }]);
+    } finally {
+        setIsTyping(false);
+    }
+};
 
             return (
                 <div className="flex flex-col h-screen max-w-2xl mx-auto p-4">
