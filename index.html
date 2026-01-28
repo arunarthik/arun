@@ -3,68 +3,103 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Terugu Arun | Portfolio</title>
+    <title>Terugu Arun | AI Portfolio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     
     <script>
         tailwind.config = {
             darkMode: 'class',
-            theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] } } }
+            theme: { extend: { fontFamily: { sans: ['Inter'], serif: ['Playfair Display'] } } }
         }
     </script>
 </head>
-<body class="bg-gray-900 text-white">
+<body class="bg-gray-900 text-gray-100 font-sans">
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState } = React;
+        const { useState, useRef, useEffect } = React;
 
-        const App = () => {
-            const [messages, setMessages] = useState([{ role: 'bot', text: 'Hi Arun! How can I help you today?' }]);
+        const AIChat = () => {
+            const [messages, setMessages] = useState([
+                { role: 'bot', text: "Hello! I'm Arun's AI Assistant. How can I help you today?" }
+            ]);
             const [input, setInput] = useState('');
+            const [isTyping, setIsTyping] = useState(false);
+            const scrollRef = useRef(null);
 
-            const handleSend = () => {
+            // Auto-scroll to bottom
+            useEffect(() => {
+                scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+            }, [messages]);
+
+            const handleSend = async () => {
                 if (!input.trim()) return;
-                // Add user message
-                const newMessages = [...messages, { role: 'user', text: input }];
-                setMessages(newMessages);
-                setInput('');
 
-                // Simulate AI Response (Since we can't hide API keys on GitHub)
+                const userMessage = { role: 'user', text: input };
+                setMessages(prev => [...prev, userMessage]);
+                setInput('');
+                setIsTyping(true);
+
+                // COMMUNICATION LOGIC
+                // In a real app, you'd call your API here. 
+                // For now, let's make it respond to your specific projects.
                 setTimeout(() => {
-                    setMessages(prev => [...prev, { role: 'bot', text: "I'm currently in 'Demo Mode'. To enable real AI, you'll need to connect a backend!" }]);
+                    let response = "That's interesting! Arun has experience in Python and C++. Would you like to see his projects?";
+                    
+                    if (input.toLowerCase().includes("hello") || input.toLowerCase().includes("hi")) {
+                        response = "Hi there! I can tell you about Arun's skills in React, Machine Learning, or his recent Mask Detection project.";
+                    } else if (input.toLowerCase().includes("project")) {
+                        response = "Arun has built a Face Mask Detector using Deep Learning and several Web Apps using React and Tailwind CSS.";
+                    }
+
+                    setMessages(prev => [...prev, { role: 'bot', text: response }]);
+                    setIsTyping(false);
                 }, 1000);
             };
 
             return (
-                <div className="min-h-screen flex flex-col items-center justify-center p-6">
-                    <h1 className="text-3xl font-bold mb-8 text-blue-400 font-serif">Arun's AI Assistant</h1>
-                    
-                    <div className="w-full max-w-md bg-gray-800 rounded-2xl shadow-2xl overflow-hidden border border-gray-700">
-                        <div className="h-96 overflow-y-auto p-4 space-y-4">
+                <div className="flex flex-col h-screen max-w-2xl mx-auto p-4">
+                    <header className="py-8 text-center">
+                        <h1 className="font-serif text-4xl text-blue-500 mb-2">AI Assistance</h1>
+                        <p className="text-gray-400">Ask me anything about Arun's work</p>
+                    </header>
+
+                    <div className="flex-1 bg-gray-800 rounded-3xl border border-gray-700 overflow-hidden flex flex-col shadow-2xl">
+                        {/* Chat Window */}
+                        <div className="flex-1 overflow-y-auto p-6 space-y-4">
                             {messages.map((m, i) => (
                                 <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                    <div className={`max-w-[80%] p-3 rounded-2xl ${m.role === 'user' ? 'bg-blue-600' : 'bg-gray-700'}`}>
+                                    <div className={`max-w-[85%] p-4 rounded-2xl shadow-sm ${
+                                        m.role === 'user' 
+                                        ? 'bg-blue-600 text-white rounded-tr-none' 
+                                        : 'bg-gray-700 text-gray-100 rounded-tl-none border border-gray-600'
+                                    }`}>
                                         {m.text}
                                     </div>
                                 </div>
                             ))}
+                            {isTyping && <div className="text-xs text-gray-500 animate-pulse ml-2">AI is thinking...</div>}
+                            <div ref={scrollRef} />
                         </div>
-                        
-                        <div className="p-4 border-t border-gray-700 flex gap-2">
+
+                        {/* Input Area */}
+                        <div className="p-4 bg-gray-800/50 border-t border-gray-700 flex gap-3">
                             <input 
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
-                                onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                                className="flex-1 bg-gray-900 border border-gray-600 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
-                                placeholder="Type a message..."
+                                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                                placeholder="Message AI Assistant..."
+                                className="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-white"
                             />
-                            <button onClick={handleSend} className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition">
-                                Send
+                            <button 
+                                onClick={handleSend}
+                                className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-3 rounded-xl font-semibold transition-colors flex items-center gap-2"
+                            >
+                                Submit
                             </button>
                         </div>
                     </div>
@@ -73,7 +108,7 @@
         };
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
+        root.render(<AIChat />);
     </script>
 </body>
 </html>
