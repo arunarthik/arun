@@ -24,7 +24,8 @@ const API = "https://arun-ai-backend.vercel.app/api/resume";
 async function load() {
 const res = await fetch(API);
 const data = await res.json();
-document.getElementById("editor").value = JSON.stringify(data, null,
+document.getElementById("editor").value = JSON.stringify(data, null,2);
+}
 async function save() {
 const text = document.getElementById("editor").value;
 await fetch(API, {
