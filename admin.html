@@ -18,24 +18,48 @@ class="mt-4 bg-blue-600 px-6 py-2 rounded hover:bg-blue-500"
     Save Resume
 </button>
 <script>
-const API = "https://arun-ai-backend.vercel.app/api/resume";
-2);
-}
-async function load() {
-const res = await fetch(API);
-const data = await res.json();
-document.getElementById("editor").value = JSON.stringify(data, null,2);
-}
-async function save() {
-const text = document.getElementById("editor").value;
-await fetch(API, {
-method: "POST",
-headers: { "Content-Type": "application/json" },
-body: text
-});
-alert("Resume updated successfully");
-}
-load();
+  const API = "https://arun-ai-backend.vercel.app/api/resume";
+
+  async function load() {
+    try {
+      const res = await fetch(API);
+      if (!res.ok) {
+        throw new Error("API returned status " + res.status);
+      }
+
+      const data = await res.json();
+      document.getElementById("editor").value =
+        JSON.stringify(data, null, 2);
+    } catch (err) {
+      document.getElementById("editor").value =
+        "ERROR LOADING RESUME:\n\n" + err.message;
+      console.error(err);
+    }
+  }
+
+  async function save() {
+    try {
+      const text = document.getElementById("editor").value;
+
+      const res = await fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: text
+      });
+
+      if (!res.ok) {
+        throw new Error("Save failed with status " + res.status);
+      }
+
+      alert("Resume updated successfully");
+    } catch (err) {
+      alert("SAVE ERROR: " + err.message);
+      console.error(err);
+    }
+  }
+
+  load();
 </script>
+
 </body>
 </html>
