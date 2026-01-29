@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Resume Admin</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-white p-10">
+<h1 class="text-2xl font-bold mb-4">Edit Resume</h1>
+<textarea
+id="editor"
+class="w-full h-[400px] bg-slate-800 p-4 rounded"
+></textarea>
+<button
+onclick="save()"
+class="mt-4 bg-blue-600 px-6 py-2 rounded hover:bg-blue-500"
+>
+    Save Resume
+</button>
+<script>
+const API = "https://arun-ai-backend.vercel.app/api/resume";
+2);
+}
+async function load() {
+const res = await fetch(API);
+const data = await res.json();
+document.getElementById("editor").value = JSON.stringify(data, null,
+async function save() {
+const text = document.getElementById("editor").value;
+await fetch(API, {
+method: "POST",
+headers: { "Content-Type": "application/json" },
+body: text
+});
+alert("Resume updated successfully");
+}
+load();
+</script>
+</body>
+</html>
