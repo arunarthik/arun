@@ -38,7 +38,7 @@
         setLoading(true);
 
         try {
-          const res = await fetch("https://arun-ai-backend.vercel.app/api/chat", {
+          const res = await fetch("https://fastapi-ai-backend-8lqq.onrender.com/chat", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ message: userMsg.text })
